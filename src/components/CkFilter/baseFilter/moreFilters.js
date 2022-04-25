@@ -1,7 +1,7 @@
-import IconFont from '@/components/IconFont';
 import { Dropdown } from 'antd';
 import cn from 'classnames';
 import React, { useCallback, useState } from 'react';
+import { IconFont } from '@/components';
 import FilterComp from '../components/filterTypes';
 import { useStore } from '../context';
 import { getIsHas, render } from '../utils';
@@ -11,28 +11,29 @@ const MoreFilters = () => {
   const [visible, setVisible] = useState(false);
 
   const setFilterValue = useCallback((item, type) => {
-    // 单选操作
+    // 单选操作: 显隐/过滤
     if (!type) {
-      const instance = {
-        ...state.instance,
-        data: state.instance.data.map(v => {
-          const obj = { ...v };
-          if (item.field === obj.field) {
-            obj.fixed = !item.fixed;
-            obj.value = '';
-          }
-          return obj;
-        }),
-      };
-      dispatch({ type: 'changeInstance', instance })
+      // 是否显示, 取反
+      const isVisible = state.visibleFields.includes(item.field);
+
+      const nValue = isVisible
+        ? state.visibleFields.filter((v) => v !== item.field)
+        : [...state.visibleFields, item.field];
+
+      dispatch({ type: 'changeVisibleFields', visibleFields: nValue });
+
+      dispatch({
+        type: 'changeOrderFields',
+        orderFields: [...nValue, ...state.orderFields.filter(v => !nValue.includes(v))]
+      });
 
       // 收起时，仅当存在筛选条件时, 才会触发筛选改变事件
-      if (item.fixed && getIsHas(item.value)) {
-        const nValue = { ...state.filterValues };
-        delete nValue[item.field]
-        dispatch({ type: 'changeFilterValue', filterValues: nValue })
+      if (isVisible && getIsHas(state.filterValues[item.field])) {
+        const filterValues = { ...state.filterValues };
+        delete filterValues[item.field]
+        dispatch({ type: 'changeFilterValues', filterValues })
 
-        state.instance.onChange(nValue); // 触发外部查询事件
+        state.instance.onChange?.(filterValues); // 触发外部查询事件
       }
     };
 
@@ -40,32 +41,37 @@ const MoreFilters = () => {
     if (type === 'reset') {
       const searchKey = state.instance.searchKey;
       const searchValue = state.filterValues[searchKey];
-      const obj = { ...state.originProps.filterValues };
+      const obj = state.originProps.filterValues || {};
       getIsHas(searchValue) ? (obj[searchKey] = searchValue) : (delete obj[searchKey]);
-      state.originProps.data.forEach(v => { v.fixed && v?.value && (obj[v.field] = v.value) });
-      dispatch({ type: 'changeInstance', instance: state.originProps });
-      dispatch({ type: 'changeFilterValue', filterValues: obj });
-      state.instance.onChange(obj); // 触发外部查询事件
+
+      const visileData = state.originProps.data.filter(v => {
+        v.fixed && getIsHas(v?.value) && (obj[v.field] = v.value);
+        return v.fixed
+      });
+      const options = {
+        filterValues: obj,
+        visibleFields: state.isMore ? visileData.map(v => v.field) : state.originProps.data.map(v => v.field),
+        orderFields: state.originProps.data.sort((a, b) => !!b.fixed - !!a.fixed).map((v) => v.field),
+      };
+
+      dispatch({ type: 'initOptions', options });
+      state.instance.onChange?.(obj); // 触发外部查询事件
     };
 
     if (type === 'top') {
-      const nValue = [item, ...state.instance.data.filter(v => v.field !== item.field)];
-      const instance = { ...state.instance, data: nValue };
-      dispatch({ type: 'changeInstance', instance })
+      dispatch({
+        type: 'changeOrderFields',
+        orderFields: [item.field, ...state.orderFields.filter((v) => v !== item.field)]
+      });
     };
 
     // 全选操作
     if (['show', 'hidden'].includes(type)) {
       const fixed = type === 'show';
-      const nValue = {
-        ...state.instance,
-        data: item.map(v => {
-          const obj = { ...v, fixed };
-          if (!v.fixed) { obj.value = '' };
-          return obj;
-        })
-      }
-      dispatch({ type: 'changeInstance', instance: nValue });
+      dispatch({
+        type: 'changeVisibleFields',
+        visibleFields: fixed ? item.map((v) => v.field) : []
+      });
 
       // 收起时，仅当存在筛选条件时, 才会触发筛选改变事件
       if (!fixed && getIsHas(state.filterValues)) {
@@ -77,20 +83,26 @@ const MoreFilters = () => {
         if (JSON.stringify(searchObj) !== JSON.stringify(state.filterValues)) {
           const obj = {};
           getIsHas(searchValue) && (obj[searchKey] = searchValue);
-          dispatch({ type: 'changeFilterValue', filterValues: obj });
-          state.instance.onChange(obj); // 触发外部查询事件
+          dispatch({ type: 'changeFilterValues', filterValues: obj });
+          state.instance.onChange?.(obj); // 触发外部查询事件
         }
       }
     };
 
     // 人性化设计,位置不变无需收起
     type !== 'top' && setVisible(false); // 收起下拉选项框
-  }, [dispatch, state.filterValues, state.instance, state.originProps]);
+  }, [dispatch, state.filterValues, state.instance, state.isMore, state.orderFields, state.originProps.data, state.originProps.filterValues, state.visibleFields]);
 
   const FilterControl = useCallback(() => {
-    const obj = { filters: state.instance.data, setFilterValue }
+    const obj = {
+      filters: state.instance.data?.sort(
+        (a, b) => state.orderFields.indexOf(a.field) - state.orderFields.indexOf(b.field),
+      ),
+      getFilterValue: state.visibleFields,
+      setFilterValue
+    }
     return render(() => <FilterComp type="more" {...obj} />)
-  }, [setFilterValue, state.instance.data]);
+  }, [setFilterValue, state.instance.data, state.orderFields, state.visibleFields]);
 
   return (
     <>
