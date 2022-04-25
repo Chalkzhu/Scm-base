@@ -1,0 +1,118 @@
+header {
+  position: relative;
+  height: 36px;
+  background-color: #eee;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 6px 0;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 6px;
+    background-color: #fff;
+  }
+
+  .tags {
+    flex: 1;
+
+    .tags_item {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      height: 30px;
+      border-radius: 8px;
+      padding: 0 8px 0 16px;
+      transition: .3s;
+      cursor: default;
+
+      &.item_home {
+        padding: 0 16px;
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: -20px;
+        bottom: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 100%;
+        clip-path: inset(50% -6px 0 50%);
+        transition: box-shadow .3s;
+        box-shadow: 0 0 0 6px transparent;
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        right: -20px;
+        bottom: 0;
+        width: 20px;
+        height: 20px;
+        border-radius: 100%;
+        clip-path: inset(50% 50% 0 -6px);
+        transition: .3s;
+        box-shadow: 0 0 0 6px transparent;
+      }
+
+      .item_label {
+        letter-spacing: 1px;
+      }
+      .item_close {
+        font-size: 12px;
+        font-weight: 600;
+        border-radius: 50%;
+        color: rgba(0, 0, 0, 0.1);
+        transition: .3s;
+        cursor: pointer;
+
+        &:hover {
+          color: rgba(0, 0, 0, 0.8);
+        }
+      }
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.8);
+
+        &::before {
+          box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+
+        &::after {
+          box-shadow: 0 0 0 6px rgba(255, 255, 255, 0.8);
+        }
+      }
+
+      &.active {
+        background-color: #fff;
+
+        &::before {
+          box-shadow: 0 0 0 6px #fff;
+        }
+
+        &::after {
+          box-shadow: 0 0 0 6px #fff;
+        }
+      }
+    }
+  }
+
+  .avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 40px;
+    color: #fff;
+    background-color: var(--main-color);
+    margin-left: 40px;
+  }
+}

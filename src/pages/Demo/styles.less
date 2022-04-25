@@ -1,0 +1,38 @@
+div.ant-typography {
+  margin: 0;
+}
+
+.container {
+  display: flex;
+  flex-flow: column;
+  gap: 16px;
+  background-color: #fff;
+  padding: 16px;
+  overflow: hidden;
+
+  .operate {
+    display: flex;
+    gap: 8px;
+  }
+
+  .grid {
+    flex: 1;
+    display: flex;
+    gap: 16px;
+    overflow: hidden;
+
+    .left {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      border: 1px solid #999;
+    }
+
+    .right {
+      height: 100%;
+      flex: 1;
+      overflow: hidden;
+    }
+  }
+}

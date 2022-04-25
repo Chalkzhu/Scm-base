@@ -1,0 +1,27 @@
+.init {
+  display: flex;
+  height: 100vh;
+  footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 60px;
+    border-top: 1px solid var(--main-color);
+    background-color: #eee;
+  }
+
+  .main_box {
+    display: flex;
+    flex-flow: column;
+    flex: 1;
+    width: calc(100% - 60px);
+
+    main {
+      flex: 1;
+      background-color: #f5f5f5;
+      padding: 16px;
+      overflow-y: auto;
+      overflow-x: auto;
+    }
+  }
+}
