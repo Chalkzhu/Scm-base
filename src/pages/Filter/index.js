@@ -89,14 +89,14 @@ const data = [
 
 const Demo = () => {
 
-  const getChange = (val) => {
-    console.log('val', val)
+  const getChange = (val, lev1) => {
+    console.log('val', val, lev1)
   };
 
   return (
     <Fragment>
       <div style={{ backgroundColor: '#fff', width: 800, height: 800, padding: 60 }}>
-        <Filter data={data} onChange={getChange} placeholder="请输入编号" searchKey="code" />
+        <Filter data={data} fullData={data} onChange={getChange} placeholder="请输入编号" searchKey="code" />
       </div>
     </Fragment>
   )

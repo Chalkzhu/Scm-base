@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
 import { Context, useContent } from './context';
+import Custom from './customFilter';
 import BaseFilter from './baseFilter';
+import ComplexFilter from './complexFilter';
 import { getIsHas } from './utils';
 
 /*
@@ -37,10 +39,18 @@ const Filter = (props) => {
 
   return (
     <Context.Provider value={{ state, dispatch }}>
-      {/* 基础过滤 */}
-      <BaseFilter />
+      <div className='filter_base'>
+        {/* 自定义过滤数据: 一级过滤 */}
+        <Custom />
 
-      <div onClick={handleGet}>获取内容</div>
+        {/* 基础过滤: 二级过滤 */}
+        <BaseFilter />
+
+        {/* 高级筛选: 二级筛选 */}
+        {state.instance.complex && <ComplexFilter />}
+
+        <div onClick={handleGet}>获取内容</div>
+      </div>
     </Context.Provider>
   )
 };

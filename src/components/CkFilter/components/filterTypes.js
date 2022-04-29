@@ -71,6 +71,54 @@ const SelectFilter = ({ filters, getFilterValue, setFilterValue }) => {
   )
 };
 
+// 自定义筛选下拉选过滤器
+const CustomFilter = ({ filters, getFilterValue, setFilterValue }) => {
+  // 单选事件
+  const onChange = (e, item) => {
+    e.preventDefault();
+    setFilterValue(item);
+  };
+
+  const handleAdd = (e, type) => {
+    e.preventDefault();
+    setFilterValue('', 'add');
+  };
+
+  const handleEdit = (e, item) => {
+    e.stopPropagation();
+    setFilterValue(item, 'edit');
+  };
+
+  return (
+    <div className="filter_dropdown">
+      <div className="filter_body">
+        <VirtualList options={filters} className="filter_list">
+          {({ item, ...resetProps }) => {
+            return (
+              <div {...resetProps} className={cn('filter_item', { checked: item.value === getFilterValue })} onClick={(e) => onChange(e, item)}>
+                <div className="filter_item-content">{item.label}</div>
+                <div className="filter_item_operate">
+                  {
+                    item.default ? '默认' : <IconFont type="lmweb-edit" className="hover_show icon_top" onClick={(e) => handleEdit(e, item)} />
+                  }
+                </div>
+              </div>
+            )
+          }}
+        </VirtualList>
+
+        <div className="filter_item add_more" onClick={(e) => handleAdd(e)}>
+          <div className="filter_item-content">
+            <IconFont type="lmweb-plus" />新增自定义查询
+          </div>
+        </div>
+
+        {!filters.length && <div className="filter_empty">暂无数据</div>}
+      </div>
+    </div>
+  )
+};
+
 // 下拉多选过滤器: 要过滤的数据, 当前选中项, 触发过滤, 过滤前的数据
 const CheckboxFilter = ({ filters, getFilterValue, setFilterValue, getPreFilteredUniqueValues }) => {
   const inputRef = useRef(null);
@@ -216,7 +264,7 @@ const MoreFilter = ({ filters, getFilterValue, setFilterValue }) => {
                 </Checkbox>
                 <div className="filter_item_operate">
                   {isTop(item) && (
-                    <IconFont type="lmweb-vertical-align-top" className="icon_top" onClick={(e) => handleTop(e, item)} />
+                    <IconFont type="lmweb-vertical-align-top" className="hover_show icon_top" onClick={(e) => handleTop(e, item)} />
                   )}
                 </div>
               </div>
@@ -298,6 +346,8 @@ const FilterComp = (props) => {
       return <CheckboxFilter {...resetProps} />
     case 'datePicker':
       return <DatePickerFilter {...resetProps} />
+    case 'custom':
+      return <CustomFilter {...resetProps} />
     case 'more':
       return <MoreFilter {...resetProps} />
     default:

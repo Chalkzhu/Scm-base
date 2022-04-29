@@ -17,7 +17,7 @@ const VirList = ({ options = [], children, size = 32, parentRef, className, maxH
   );
 
   if (options?.length < 50) {
-    return <div className="filter_list">{options?.map((item, i) => children({ key: i, item }))}</div>;
+    return <div className={`virtual_list ${className}`}>{options?.map((item, i) => children({ key: i, item }))}</div>;
   }
 
   return (

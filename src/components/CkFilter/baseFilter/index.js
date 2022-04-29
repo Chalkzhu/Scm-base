@@ -22,7 +22,7 @@ const Filter = () => {
   };
 
   return (
-    <div className='filter_base'>
+    <>
       {search && (
         <div className="filter_search">
           <Input.Search ref={inputRef} allowClear size="small" placeholder={placeholder} onSearch={handleFilter} />
@@ -39,7 +39,7 @@ const Filter = () => {
       }
 
       {isMore && <MoreFilters />}
-    </div>
+    </>
   )
 };
 

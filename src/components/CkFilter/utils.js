@@ -1,8 +1,8 @@
 import dayjs from 'dayjs';
-// 检查是否存在内容
+// 检查是否存在内容: 数字、布尔值、非空数组、非空对象
 export function getIsHas(val) {
-  // 检查是否数字类型
-  let flag = !!val || typeof val === 'number';
+  // 检查是否数字、布尔类型
+  let flag = !!val || typeof val === 'number' || typeof val === 'boolean';
   // 检查空对象和空数组
   if (!!val && typeof val === 'object') { flag = Array.isArray(val) ? !!val.length : !!Object.keys(val)?.length }
   return flag;
