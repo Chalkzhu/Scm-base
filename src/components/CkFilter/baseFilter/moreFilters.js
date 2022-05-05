@@ -33,7 +33,7 @@ const MoreFilters = () => {
         delete filterValues[item.field]
         dispatch({ type: 'changeFilterValues', filterValues })
 
-        state.instance.onChange?.(filterValues); // 触发外部查询事件
+        state.instance.onChange?.(filterValues, state.customFilterValues); // 触发外部查询事件
       }
     };
 
@@ -55,7 +55,7 @@ const MoreFilters = () => {
       };
 
       dispatch({ type: 'initOptions', options });
-      state.instance.onChange?.(obj); // 触发外部查询事件
+      state.instance.onChange?.(obj, state.customFilterValues); // 触发外部查询事件
     };
 
     if (type === 'top') {
@@ -84,14 +84,14 @@ const MoreFilters = () => {
           const obj = {};
           getIsHas(searchValue) && (obj[searchKey] = searchValue);
           dispatch({ type: 'changeFilterValues', filterValues: obj });
-          state.instance.onChange?.(obj); // 触发外部查询事件
+          state.instance.onChange?.(obj, state.customFilterValues); // 触发外部查询事件
         }
       }
     };
 
     // 人性化设计,位置不变无需收起
     type !== 'top' && setVisible(false); // 收起下拉选项框
-  }, [dispatch, state.filterValues, state.instance, state.isMore, state.orderFields, state.originProps.data, state.originProps.filterValues, state.visibleFields]);
+  }, [dispatch, state]);
 
   const FilterControl = useCallback(() => {
     const obj = {

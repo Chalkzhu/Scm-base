@@ -1,12 +1,12 @@
-import React, { useRef, useMemo } from 'react';
-import { Button, Drawer, Input, Space, Radio, Tag } from 'antd';
+import React, { useEffect, useMemo } from 'react';
+import { Button, Drawer, Form, Input, Space, Radio, Tag } from 'antd';
 import { IconFont, VirtualList } from '@/components';
 import { useStore } from '../context';
 import { getIsHas } from '../utils';
 
 const ListItem = (props) => {
   const { state, dispatch } = useStore();
-  const { instance: { fullData = [] } } = state;
+  const { instance: { fullData = [] }, customDrawer } = state;
   const { field, value } = props;
   // const [useCheckValue, setCheckValue] = useState(value); // 选中的数据
 
@@ -34,24 +34,35 @@ const ListItem = (props) => {
     })
   };
 
+  // 删除
   const handleDelete = (e) => {
     e.stopPropagation();
+    const filterValues = { ...customDrawer.data.filterValues };
+    delete filterValues[field];
+    dispatch({ type: 'changeDrawer', customDrawer: { ...customDrawer, data: { ...customDrawer.data, filterValues } } });
   };
 
   // 删除Tag
-  const onTagClose = () => { };
+  const onTagClose = (val) => {
+    const filterValues = {
+      ...customDrawer.data.filterValues,
+      [field]: {
+        ...customDrawer.data.filterValues[field],
+        value: customDrawer.data.filterValues[field].value.filter(v => !v.includes(val))
+      }
+    };
+    dispatch({ type: 'changeDrawer', customDrawer: { ...customDrawer, data: { ...customDrawer.data, filterValues } } });
+  };
 
   // Tags显示
   const tagElem = () => {
     return (
       <>
-        {checkedValues?.map((v) => {
-          return (
-            <Tag key={v.value} closable onClose={() => onTagClose(v.value)}>
-              {v.label}
-            </Tag>
-          );
-        })}
+        {checkedValues?.map((v) => (
+          <Tag key={v.value} closable onClose={() => onTagClose(v.value)}>
+            {v.label}
+          </Tag>
+        ))}
 
         <Tag className="site-tag-plus" onClick={handleAdd}>
           <IconFont type="lmweb-plus-circle" /> 新增
@@ -68,7 +79,7 @@ const ListItem = (props) => {
       <div className="item_box" onClick={handleEdit}>
         <div className="item_header">
           <div className="item_header_title">
-            {getItem.title}（{modeLabel}）
+            {`${getItem.title}（${modeLabel}）`}
           </div>
           <IconFont type="lmweb-close1" onClick={handleDelete} className="item_header_icon" />
         </div>
@@ -82,7 +93,7 @@ const Index = () => {
   const { state, dispatch } = useStore();
   const { customDrawer } = state;
 
-  const inputRef = useRef();
+  const [form] = Form.useForm();
 
   // 是否编辑
   const isEdit = useMemo(() => getIsHas(customDrawer.data), [customDrawer.data]);
@@ -107,9 +118,21 @@ const Index = () => {
   };
 
   // 保存数据
-  const onSave = () => {
-    console.log('保存数据！', state.customDrawer)
-    onClose?.()
+  const onSave = async () => {
+    try {
+      const val = await form.validateFields();
+      const nValue = {
+        ...state.customDrawer.data,
+        ...val,
+      }
+      if (!nValue.value) {
+        Object.assign(nValue, { value: `diy${Date.now()}` })
+      }
+      console.log('保存数据！', nValue, state.customDrawer)
+      onClose?.()
+    } catch (error) {
+      console.log('error:', error);
+    }
   };
 
   // 弹窗配置项
@@ -131,23 +154,31 @@ const Index = () => {
     )
   };
 
+  useEffect(() => {
+    if (customDrawer.visible) {
+      form.resetFields();
+    }
+  }, [customDrawer.visible, form])
+
   return (
     <>
       <Drawer {...config}>
-        <div className="filter_drawer_group">
-          <div className="filter_drawer_group_title">
-            <span className="required">*</span> 名称
+        <Form form={form} initialValues={{ label: filterItem.label, default: !!filterItem.default }} layout="vertical" size="default">
+          <div className="filter_drawer_group">
+            <Form.Item name="label" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
+              <Input placeholder="请输入" size="middle" />
+            </Form.Item>
           </div>
-          <Input ref={inputRef} defaultValue={filterItem.label} placeholder="请输入" size="middle" />
-        </div>
 
-        <div className="filter_drawer_group">
-          <div className="filter_drawer_group_title">设为默认</div>
-          <Radio.Group onChange={onRadioChange} defaultValue={!!filterItem.default} size="small">
-            <Radio value>是</Radio>
-            <Radio value={false}>否</Radio>
-          </Radio.Group>
-        </div>
+          <div className="filter_drawer_group">
+            <Form.Item name="default" label="设为默认">
+              <Radio.Group onChange={onRadioChange} size="small">
+                <Radio value>是</Radio>
+                <Radio value={false}>否</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </div>
+        </Form>
 
         <div className="filter_drawer_group">
           <div className="filter_drawer_group_add">

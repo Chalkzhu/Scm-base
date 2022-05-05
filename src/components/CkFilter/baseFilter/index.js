@@ -11,14 +11,14 @@ import { getIsHas } from '../utils';
 */
 const Filter = () => {
   const inputRef = useRef(null);
-  const { state: { instance: { data, onChange, placeholder, searchKey, search, filter }, isMore, filterValues, visibleFields, orderFields }, dispatch } = useStore();
+  const { state: { instance: { data, onChange, placeholder, searchKey, search, filter }, isMore, filterValues, visibleFields, orderFields, customFilterValues }, dispatch } = useStore();
 
   // 输入框查询事件
   const handleFilter = (val) => {
     const nValue = { ...filterValues };
     getIsHas(val) ? (nValue[searchKey] = val) : (delete nValue[searchKey]);
     dispatch({ type: 'changeFilterValues', filterValues: nValue });
-    onChange(nValue);
+    onChange(nValue, customFilterValues);
   };
 
   return (

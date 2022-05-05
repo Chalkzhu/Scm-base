@@ -45,20 +45,22 @@ const ModalItem = () => {
   const onSave = async () => {
     try {
       const { field, ...values } = await form.validateFields();
+      const filterValues = { ...customDrawer.data.filterValues };
 
-      const filterValues = {
-        ...customDrawer.data.filterValues,
-        [customModal.data.field]: values,
-      };
+      // 判断是新增还是编辑
+      if (isEdit) {
+        Object.assign(filterValues, { [customModal.data.field]: values });
+      } else {
+        Object.assign(filterValues, { [field]: values });
+      }
+
       const nValue = {
         ...customDrawer,
         data: { ...customDrawer.data, filterValues }
       }
       console.log('customDrawer', nValue);
-      dispatch({
-        type: 'changeDrawer',
-        customDrawer: nValue,
-      })
+      dispatch({ type: 'changeDrawer', customDrawer: nValue });
+      onClose();
     } catch (error) {
       console.log('校验错误！', error);
     }
@@ -109,11 +111,13 @@ const ModalItem = () => {
       <EditModal {...config}>
         <div className="custom_modal">
           <Form form={form} initialValues={{ mode: 'or' }} onValuesChange={onValuesChange} layout="vertical" size="default">
-            <Form.Item name="field" label="选择字段">
-              <Select>
-                {state.instance.fullData.map(v => <Select.Option key={v.field} value={v.field}>{v.title}</Select.Option>)}
-              </Select>
-            </Form.Item>
+            {!isEdit && (
+              <Form.Item name="field" label="选择字段">
+                <Select>
+                  {state.instance.fullData.map(v => <Select.Option key={v.field} value={v.field}>{v.title}</Select.Option>)}
+                </Select>
+              </Form.Item>
+            )}
 
             <Form.Item noStyle shouldUpdate={(prevValues, currentValues) => prevValues.field !== currentValues.field}>
               {DynamicSelect}

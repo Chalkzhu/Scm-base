@@ -18,7 +18,7 @@ const Filter = (props) => {
 
   // 初始化过滤数据
   useEffect(() => {
-    const { data, filterValues = {} } = props;
+    const { data, filterValues = {}, custom } = props;
     const isMore = data?.length > 5;
     const visileData = data.filter(v => {
       v.fixed && getIsHas(v?.value) && (filterValues[v.field] = v.value);
@@ -29,6 +29,7 @@ const Filter = (props) => {
       visibleFields: isMore ? visileData.map(v => v.field) : data.map(v => v.field),
       orderFields: data.sort((a, b) => !!b.fixed - !!a.fixed).map((v) => v.field),
       isMore,
+      customFilterValues: custom ? custom?.find(v => v.default).filterValues : {},
     };
     dispatch({ type: 'initOptions', options });
   }, []);
@@ -41,7 +42,7 @@ const Filter = (props) => {
     <Context.Provider value={{ state, dispatch }}>
       <div className='filter_base'>
         {/* 自定义过滤数据: 一级过滤 */}
-        <Custom />
+        {state.instance.custom && <Custom />}
 
         {/* 基础过滤: 二级过滤 */}
         <BaseFilter />

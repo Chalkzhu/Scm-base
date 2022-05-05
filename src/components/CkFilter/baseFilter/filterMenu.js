@@ -25,9 +25,9 @@ const FilterMenu = (props) => {
     dispatch({ type: 'changeFilterValues', filterValues: nValue });
 
     // 触发外部查询, 单击时不关闭菜单
-    state.instance.onChange?.(nValue);
+    state.instance.onChange?.(nValue, state.customFilterValues);
     !filterType && setVisible(false);
-  }, [dispatch, field, state.filterValues, state.instance]);
+  }, [dispatch, field, state.customFilterValues, state.filterValues, state.instance]);
 
   // 展示的内容
   const checkedValue = useMemo(() => {

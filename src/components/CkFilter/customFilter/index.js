@@ -15,7 +15,7 @@ const Custom = () => {
 
   // 选中的项
   const filterItem = useMemo(() => {
-    return state.instance.custom.find(v => v.value === checkValue);
+    return state.instance.custom?.find(v => v.value === checkValue);
   }, [checkValue, state.instance.custom]);
 
   // 设置过滤的内容
@@ -23,6 +23,10 @@ const Custom = () => {
     if (!type) {
       setVisible(false);
       setCheckValue(item.value); // 设置选中的值
+      dispatch({
+        type: 'changeCustomFilterValues',
+        customFilterValues: item.filterValues
+      });
       // 向外抛出一级查询条件: 二级筛选, 一级筛选
       state.instance.onChange?.(state.filterValues, item.filterValues);
     }
