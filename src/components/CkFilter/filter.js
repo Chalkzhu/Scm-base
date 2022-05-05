@@ -4,6 +4,7 @@ import Custom from './customFilter';
 import BaseFilter from './baseFilter';
 import ComplexFilter from './complexFilter';
 import { getIsHas } from './utils';
+import Group from './customFilter/radioGroup';
 
 /*
  * data
@@ -11,6 +12,7 @@ import { getIsHas } from './utils';
 */
 const Filter = (props) => {
   const [state, dispatch] = useContent();
+  const { custom, levelGroup, complex } = state.instance;
 
   const handleGet = () => {
     console.log(state);
@@ -18,7 +20,7 @@ const Filter = (props) => {
 
   // 初始化过滤数据
   useEffect(() => {
-    const { data, filterValues = {}, custom } = props;
+    const { data, filterValues = {}, custom: isCustom } = props;
     const isMore = data?.length > 5;
     const visileData = data.filter(v => {
       v.fixed && getIsHas(v?.value) && (filterValues[v.field] = v.value);
@@ -29,7 +31,7 @@ const Filter = (props) => {
       visibleFields: isMore ? visileData.map(v => v.field) : data.map(v => v.field),
       orderFields: data.sort((a, b) => !!b.fixed - !!a.fixed).map((v) => v.field),
       isMore,
-      customFilterValues: custom ? custom?.find(v => v.default).filterValues : {},
+      customFilterValues: isCustom ? isCustom?.find(v => v.default).filterValues : {},
     };
     dispatch({ type: 'initOptions', options });
   }, []);
@@ -42,13 +44,16 @@ const Filter = (props) => {
     <Context.Provider value={{ state, dispatch }}>
       <div className='filter_base'>
         {/* 自定义过滤数据: 一级过滤 */}
-        {state.instance.custom && <Custom />}
+        {custom && <Custom />}
+        {levelGroup && <Group />}
+
+        {(custom || levelGroup) && <div className="line" />}
 
         {/* 基础过滤: 二级过滤 */}
         <BaseFilter />
 
         {/* 高级筛选: 二级筛选 */}
-        {state.instance.complex && <ComplexFilter />}
+        {complex && <ComplexFilter />}
 
         <div onClick={handleGet}>获取内容</div>
       </div>

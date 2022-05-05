@@ -4,13 +4,13 @@ import { createContext, useContext, useReducer } from 'react';
 
 const initialState = {
   originProps: { data: [] }, // 原始数据
-  instance: { data: [], fullData: [], filterValues: {}, placeholder: '请输入', custom: false, search: true, searchKey: 'search', filter: true, complex: true }, // 初始化数据
+  instance: { data: [], fullData: [], filterValues: {}, placeholder: '请输入', custom: false, search: true, searchKey: 'search', levelGroupKey: 'levGroup', filter: true, complex: true }, // 初始化数据
   filterValues: {}, // 当前过滤的数据的键值对
   visibleFields: [], // 显示的字段
   orderFields: [], // 排序的字段
   isMore: false, // 是否展示更多筛选项, 数量大于5时展示
 
-  customFilterValues: {}, // 一级筛选过滤的内容, 作废
+  customFilterValues: {}, // 一级筛选过滤的内容
 
   customDrawer: { visible: false, data: {} }, // 抽屉数据
   customModal: { visible: false, data: {} }, // 弹窗数据
