@@ -31,11 +31,14 @@ const ButtonTags = ({ value, onChange, options }) => {
 
 const ModalItem = () => {
   const { state, dispatch } = useStore();
-  const { customModal, customDrawer, instance } = state;
+  const { customModal, customDrawer, complexDrawer, instance } = state;
   const [form] = Form.useForm();
 
   // 是否编辑
-  const isEdit = useMemo(() => getIsHas(customModal.data), [customModal.data]);
+  const isEdit = useMemo(() => {
+    const { type, data } = customModal;
+    return type === 'complex' || getIsHas(data);
+  }, [customModal]);
 
   const onClose = () => {
     dispatch({ type: 'changeModal', customModal: { ...customModal, visible: false } });
@@ -45,7 +48,8 @@ const ModalItem = () => {
   const onSave = async () => {
     try {
       const { field, ...values } = await form.validateFields();
-      const filterValues = { ...customDrawer.data.filterValues };
+
+      const filterValues = customModal.type === 'complex' ? { ...complexDrawer.data } : { ...customDrawer.data.filterValues };
 
       // 判断是新增还是编辑
       if (isEdit) {
@@ -54,12 +58,11 @@ const ModalItem = () => {
         Object.assign(filterValues, { [field]: values });
       }
 
-      const nValue = {
-        ...customDrawer,
-        data: { ...customDrawer.data, filterValues }
+      if (customModal.type === 'complex') {
+        dispatch({ type: 'changeComplexDrawer', complexDrawer: { ...complexDrawer, data: filterValues } });
+      } else {
+        dispatch({ type: 'changeDrawer', customDrawer: { ...customDrawer, data: { ...customDrawer.data, filterValues } } });
       }
-      console.log('customDrawer', nValue);
-      dispatch({ type: 'changeDrawer', customDrawer: nValue });
       onClose();
     } catch (error) {
       console.log('校验错误！', error);

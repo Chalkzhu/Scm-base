@@ -36,7 +36,7 @@
     height: var(--basic-height);
     border-right: 1px solid #eee;
   }
-  
+
   .ant-radio-button-wrapper {
     font-size: 12px;
   }
@@ -336,6 +336,7 @@
 // 抽屉组件样式
 .ant-drawer {
   .ant-drawer-header {
+    flex: 0 0 auto;
     height: 48px;
     line-height: 1;
     padding: 0 24px;
@@ -352,6 +353,8 @@
   }
 
   &.filter_drawer {
+
+    // 自定义筛选抽屉样式
     .filter_drawer_group {
       font-size: 12px;
       line-height: 1;
@@ -385,7 +388,7 @@
     }
 
     .filter_drawer_group_add {
-      padding-top: 8px;
+      padding: 8px 0;
 
       .ant-btn {
         font-size: 12px;
@@ -394,9 +397,10 @@
 
     .filter_drawer_group_list {
       .filter_drawer_group_item {
-        margin-top: var(--gap);
+        margin-bottom: var(--gap);
 
         .item_box {
+          line-height: 1;
           border: 1px dashed transparent;
           background: var(--background-color);
           padding: calc(var(--gap) * 2);
@@ -420,6 +424,10 @@
               font-size: 16px;
               color: #8C8C8C;
               transition: .3s;
+
+              &.icon_plus {
+                color: var(--font-color);
+              }
 
               &:hover {
                 color: var(--font-color);
@@ -447,6 +455,26 @@
               vertical-align: top;
             }
           }
+        }
+      }
+    }
+
+    // 高级筛选抽屉样式
+    .complex_filter_body {
+      .checked_group {
+        margin-bottom: 24px;
+      }
+
+      .list_group {
+
+        .list_group_title {
+          font-size: 14px;
+          font-weight: 500;
+          line-height: 1.25;
+        }
+
+        .list_group_search {
+          margin: 16px 0;
         }
       }
     }

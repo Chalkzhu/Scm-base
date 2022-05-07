@@ -13,11 +13,13 @@ const initialState = {
   customFilterValues: {}, // 一级筛选过滤的内容
 
   customDrawer: { visible: false, data: {} }, // 抽屉数据
-  customModal: { visible: false, data: {} }, // 弹窗数据
+  customModal: { visible: false, type: 'custom', data: {} }, // 弹窗数据
+
+  complexDrawer: { visible: false, data: { state: { value: [ '22k', '32k'], mode: 'or' } } }, // 高级筛选弹窗数据
 };
 
 const reducer = (state, action) => {
-  const { options, instance, filterValues, visibleFields, orderFields, customDrawer, customModal, customFilterValues } = action;
+  const { options, instance, filterValues, visibleFields, orderFields, customDrawer, customModal, complexDrawer, customFilterValues } = action;
   switch (action.type) {
     // 仅在初始化时触发
     case 'initOptions':
@@ -34,12 +36,18 @@ const reducer = (state, action) => {
     case 'changeOrderFields':
       return { ...state, orderFields };
 
+    // 自定义筛选事件
     case 'changeDrawer':
       return { ...state, customDrawer };
     case 'changeModal':
       return { ...state, customModal };
     case 'changeCustomFilterValues':
       return { ...state, customFilterValues };
+
+    // 高级筛选事件
+    case 'changeComplexDrawer':
+      return { ...state, complexDrawer };
+
 
     default:
       throw new Error();

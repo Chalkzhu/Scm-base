@@ -163,39 +163,41 @@ const Index = () => {
   return (
     <>
       <Drawer {...config}>
-        <Form form={form} initialValues={{ label: filterItem.label, default: !!filterItem.default }} layout="vertical" size="default">
-          <div className="filter_drawer_group">
-            <Form.Item name="label" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
-              <Input placeholder="请输入" size="middle" />
-            </Form.Item>
-          </div>
+        <div className="custom_filter_body">
+          <Form form={form} initialValues={{ label: filterItem.label, default: !!filterItem.default }} layout="vertical" size="default">
+            <div className="filter_drawer_group">
+              <Form.Item name="label" label="名称" rules={[{ required: true, message: '请输入名称' }]}>
+                <Input placeholder="请输入" size="middle" />
+              </Form.Item>
+            </div>
+
+            <div className="filter_drawer_group">
+              <Form.Item name="default" label="设为默认">
+                <Radio.Group onChange={onRadioChange} size="small">
+                  <Radio value>是</Radio>
+                  <Radio value={false}>否</Radio>
+                </Radio.Group>
+              </Form.Item>
+            </div>
+          </Form>
 
           <div className="filter_drawer_group">
-            <Form.Item name="default" label="设为默认">
-              <Radio.Group onChange={onRadioChange} size="small">
-                <Radio value>是</Radio>
-                <Radio value={false}>否</Radio>
-              </Radio.Group>
-            </Form.Item>
-          </div>
-        </Form>
+            <div className="filter_drawer_group_add">
+              <Button type="dashed" block onClick={addEvent} icon={<IconFont type="lmweb-plus-circle" />} size="middle">
+                新增筛选项
+              </Button>
+            </div>
 
-        <div className="filter_drawer_group">
-          <div className="filter_drawer_group_add">
-            <Button type="dashed" block onClick={addEvent} icon={<IconFont type="lmweb-plus-circle" />} size="middle">
-              新增筛选项
-            </Button>
+            <VirtualList options={filterItemData} className="filter_drawer_group_list">
+              {({ item, ...resetProps }) => {
+                return (
+                  <div {...resetProps} className="filter_drawer_group_item">
+                    <ListItem {...item} />
+                  </div>
+                )
+              }}
+            </VirtualList>
           </div>
-
-          <VirtualList options={filterItemData} className="filter_drawer_group_list">
-            {({ item, ...resetProps }) => {
-              return (
-                <div {...resetProps} className="filter_drawer_group_item">
-                  <ListItem {...item} />
-                </div>
-              )
-            }}
-          </VirtualList>
         </div>
       </Drawer>
     </>
