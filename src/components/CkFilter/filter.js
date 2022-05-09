@@ -20,7 +20,7 @@ const Filter = (props) => {
 
   // 初始化过滤数据
   useEffect(() => {
-    const { trigger = 'init', onChange, data, filterValues = {}, custom: hasCustom, levelGroup: hasLevelGroup } = props;
+    const { trigger, onChange, data, filterValues = {}, custom: hasCustom, levelGroup: hasLevelGroup } = props;
     const isMore = data?.length > 5;
     const visileData = data.filter(v => {
       v.fixed && getIsHas(v?.value) && (filterValues[v.field] = v.value);
