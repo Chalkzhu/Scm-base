@@ -93,6 +93,7 @@ const ModalItem = () => {
     visible: customModal.visible,
     onCancel: onClose,
     bodyStyle: { padding: 24 },
+    zIndex: 2001,
     footer: [
       <Button key="cancel" onClick={onClose} size="middle">
         取消

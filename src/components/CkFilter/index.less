@@ -436,11 +436,15 @@
           }
 
           .item_tags {
+            display: flex;
+            flex-flow: wrap;
+            gap: var(--gap);
             padding-top: 12px;
 
             .ant-tag {
               color: var(--font-color);
               background-color: var(--background-color);
+              margin: 0;
 
               &.site-tag-plus {
                 background: transparent;

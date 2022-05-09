@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Button, Drawer, Form, Input, Space, Radio, Tag } from 'antd';
 import { IconFont, VirtualList } from '@/components';
 import { useStore } from '../context';
@@ -91,7 +91,7 @@ const ListItemChecked = (props) => {
 
 // 全部筛选项
 const ListGroup = () => {
-  const { state } = useStore();
+  const { state, dispatch } = useStore();
   const { fullData } = state.instance;
   const [options, setOptions] = useState(fullData);
 
@@ -99,7 +99,16 @@ const ListGroup = () => {
     setOptions(fullData.filter(v => v.title.indexOf(val) > -1));
   };
   // 编辑
-  const handleEdit = () => { };
+  const handleEdit = ({ field }) => {
+    // 单项匹配数据, 根据字段名查找
+    const getItem = fullData.find(v => v.field === field);
+    console.log('getItem', getItem);
+    // 编辑
+    dispatch({
+      type: 'changeModal',
+      customModal: { visible: true, type: 'complex', data: { ...getItem, value: [] } }
+    })
+  };
 
   return (
     <>
@@ -112,7 +121,7 @@ const ListGroup = () => {
           {({ item, ...resetProps }) => {
             return (
               <div {...resetProps} className="filter_drawer_group_item">
-                <div className="item_box" onClick={handleEdit}>
+                <div className="item_box" onClick={() => handleEdit(item)}>
                   <div className="item_header">
                     <div className="item_header_title">
                       {item.title}
@@ -131,7 +140,7 @@ const ListGroup = () => {
 
 const Index = () => {
   const { state, dispatch } = useStore();
-  const { complexDrawer: { visible, data } } = state;
+  const { complexDrawer: { visible, data }, complexFilterValues } = state;
 
   const isHas = useMemo(() => getIsHas(data), [data]);
 
@@ -141,12 +150,31 @@ const Index = () => {
   }, [data, isHas]);
   console.log('filterItemData', filterItemData);
 
-  const onClose = () => { dispatch({ type: 'changeComplexDrawer', complexDrawer: { data, visible: false } }) };
+  const onClose = () => {
+    dispatch({
+      type: 'changeComplexDrawer',
+      complexDrawer: { data, visible: false }
+    })
+  };
+
   const onSave = () => { };
   const onSearch = () => {
     console.log('complexDrawer:', data);
+    dispatch({
+      type: 'changeComplexFilterValues',
+      complexFilterValues: data
+    })
+    onClose();
   };
 
+  useEffect(() => {
+    if (visible) {
+      dispatch({
+        type: 'changeComplexDrawer',
+        complexDrawer: { data: complexFilterValues, visible }
+      })
+    }
+  }, [dispatch, visible]);
 
   // 弹窗配置项
   const config = {

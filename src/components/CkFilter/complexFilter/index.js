@@ -9,9 +9,10 @@ const Custom = () => {
   const { state, dispatch } = useStore();
   const [visible, setVisible] = useState(false);
 
+  // 是否正在高级筛选
   const isOnSearch = useMemo(() => {
-    return getIsHas(state.complexDrawer.data)
-  }, [state.complexDrawer.data])
+    return getIsHas(state.complexFilterValues)
+  }, [state.complexFilterValues])
 
   const handleClick = () => {
     dispatch({
