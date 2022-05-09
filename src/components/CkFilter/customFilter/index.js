@@ -4,14 +4,14 @@ import cn from 'classnames';
 import { IconFont } from '@/components';
 import FilterComp from '../components/filterTypes';
 import { useStore } from '../context';
-import { getIsHas, render } from '../utils';
+import { render } from '../utils';
 import CustomFilterDrawer from './drawer';
 import CustomModal from './modal';
 
 const Custom = () => {
   const { state, dispatch } = useStore();
   const [visible, setVisible] = useState(false); // 下拉框的显隐
-  const [checkValue, setCheckValue] = useState('all'); // 选中的数据
+  const [checkValue, setCheckValue] = useState(state.instance.custom?.find(v => !!v.default)?.value || 'all'); // 选中的数据
 
   // 选中的项
   const filterItem = useMemo(() => {

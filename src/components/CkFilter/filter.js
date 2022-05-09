@@ -20,20 +20,29 @@ const Filter = (props) => {
 
   // 初始化过滤数据
   useEffect(() => {
-    const { data, filterValues = {}, custom: isCustom } = props;
+    const { trigger = 'init', onChange, data, filterValues = {}, custom: hasCustom, levelGroup: hasLevelGroup } = props;
     const isMore = data?.length > 5;
     const visileData = data.filter(v => {
       v.fixed && getIsHas(v?.value) && (filterValues[v.field] = v.value);
       return v.fixed
     });
+
+    const customFilterValues = () => {
+      const nValue = hasCustom || hasLevelGroup;
+      return nValue?.find(v => v.default)?.filterValues || {}
+    }
+
     const options = {
-      filterValues,
       visibleFields: isMore ? visileData.map(v => v.field) : data.map(v => v.field),
       orderFields: data.sort((a, b) => !!b.fixed - !!a.fixed).map((v) => v.field),
       isMore,
-      customFilterValues: isCustom ? isCustom?.find(v => v.default).filterValues : {},
+      filterValues,
+      customFilterValues: customFilterValues(),
     };
     dispatch({ type: 'initOptions', options });
+
+    // 是否立即触发
+    trigger === 'init' && onChange?.(filterValues, customFilterValues())
   }, []);
 
   useEffect(() => {

@@ -91,8 +91,8 @@ const Demo = () => {
 
   // 自定义筛选数据定义
   const customFilter = [
-    { label: '全部', value: 'all', filterValues: {}, default: true },
-    { label: '我关注的', value: 'v1', filterValues: { state: { value: ['22k', '32k'], mode: 'and' }, t1: {} } },
+    { label: '全部', value: 'all', filterValues: {} },
+    { label: '我关注的', value: 'v1', filterValues: { state: { value: ['22k', '32k'], mode: 'and' }, t1: {} }, default: true },
     { label: '自定义1', value: 'diy1', filterValues: { state: { value: '', mode: 'or' } } },
     { label: '自定义2', value: 'diy2', filterValues: { t1: { value: '', mode: 'or' } } },
     { label: '自定义3', value: 'diy3', filterValues: {} },
