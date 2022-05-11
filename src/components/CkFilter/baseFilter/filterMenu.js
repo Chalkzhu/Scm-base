@@ -8,7 +8,7 @@ import { getIsHas, render } from '../utils';
 
 // 过滤菜单
 const FilterMenu = (props) => {
-  const { field, title, type = 'checkbox', data, props: comProps } = props;
+  const { field, title, type = 'checkbox', dateType = 'date', data, props: comProps } = props;
   const { state, dispatch } = useStore();
   const [visible, setVisible] = useState(false);
 
@@ -35,6 +35,7 @@ const FilterMenu = (props) => {
     if (type === 'date') {
       const obj = {
         props: comProps,
+        dateType,
         getFilterValue: filterValue,
         setFilterValue,
       }
@@ -58,7 +59,7 @@ const FilterMenu = (props) => {
     }
     // 输入框类型
     return filterValue;
-  }, [comProps, data, isFiltering, setFilterValue, type, filterValue])
+  }, [type, isFiltering, filterValue, dateType, comProps, setFilterValue, data])
 
   // 下拉组件渲染
   const FilterControl = useCallback(() => {

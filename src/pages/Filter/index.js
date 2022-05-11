@@ -30,10 +30,12 @@ const data = [
   {
     id: 't',
     type: 'date',
+    dateType: 'date',
     title: '创建时间',
     field: 'createdDate',
     fixed: true,
-    value: ['2022-04-12', '2022-04-21'],
+    // value: ['2022-04-12', '2022-04-21'],
+    value: '2022-04-12',
   },
   {
     id: '3',

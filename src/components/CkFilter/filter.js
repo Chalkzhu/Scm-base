@@ -5,6 +5,7 @@ import BaseFilter from './baseFilter';
 import ComplexFilter from './complexFilter';
 import { getIsHas } from './utils';
 import Group from './customFilter/radioGroup';
+import CustomModal from './components/modal';
 
 /*
  * data
@@ -65,6 +66,10 @@ const Filter = (props) => {
         {complex && <ComplexFilter />}
 
         <div onClick={handleGet}>获取内容</div>
+
+
+        {/* 选项弹窗 */}
+        <CustomModal />
       </div>
     </Context.Provider>
   )

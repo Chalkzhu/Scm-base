@@ -6,7 +6,6 @@ import FilterComp from '../components/filterTypes';
 import { useStore } from '../context';
 import { render } from '../utils';
 import CustomFilterDrawer from './drawer';
-import CustomModal from './modal';
 
 const Custom = () => {
   const { state, dispatch } = useStore();
@@ -67,9 +66,6 @@ const Custom = () => {
 
       {/* 右侧抽屉弹窗 */}
       <CustomFilterDrawer />
-
-      {/* 选项弹窗 */}
-      <CustomModal />
     </>
   )
 };

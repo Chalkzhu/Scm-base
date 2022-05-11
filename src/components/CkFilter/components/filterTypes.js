@@ -4,6 +4,7 @@ import moment from 'moment';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
 import { IconFont, VirtualList } from '@/components';
 import { getIsHas, getRanges } from '../utils';
+import { debounce } from 'lodash';
 
 // 输入框过滤器
 const InputFilter = ({ getFilterValue, setFilterValue }) => {
@@ -50,9 +51,18 @@ const SelectFilter = ({ filters, getFilterValue, setFilterValue }) => {
 
   return (
     <div className="filter_dropdown">
-      {isSearch && <div className="filter_header">
-        <Input.Search ref={inputRef} allowClear size="small" placeholder="请输入" onSearch={handleFilter} />
-      </div>}
+      {isSearch && (
+        <div className="filter_header">
+          <Input.Search
+            ref={inputRef}
+            allowClear
+            size="small"
+            placeholder="请输入"
+            onSearch={handleFilter}
+            onChange={debounce((e) => handleFilter(e.target.value), 500)}
+          />
+        </div>
+      )}
 
       <div className="filter_body">
         <VirtualList options={options} className="filter_list">
@@ -166,13 +176,22 @@ const CheckboxFilter = ({ filters, getFilterValue, setFilterValue, getPreFiltere
 
   return (
     <div className="filter_dropdown">
-      {isSearch && <div className="filter_header">
-        <Input.Search ref={inputRef} allowClear size="small" placeholder="请输入" onSearch={handleFilter} />
-        <div className="filter_header_operate">
-          <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} className="filter_tip">全部</Checkbox>
-          <div><span className="filter_tip">已选: {checkedValues.length}</span></div>
+      {isSearch && (
+        <div className="filter_header">
+          <Input.Search
+            ref={inputRef}
+            allowClear
+            size="small"
+            placeholder="请输入"
+            onSearch={handleFilter}
+            onChange={debounce((e) => handleFilter(e.target.value), 500)}
+          />
+          <div className="filter_header_operate">
+            <Checkbox indeterminate={indeterminate} onChange={onCheckAllChange} checked={checkAll} className="filter_tip">全部</Checkbox>
+            <div><span className="filter_tip">已选: {checkedValues.length}</span></div>
+          </div>
         </div>
-      </div>}
+      )}
 
       <Checkbox.Group value={checkedValues} className="filter_body">
         <VirtualList options={options} className="filter_list">
@@ -200,8 +219,6 @@ const CheckboxFilter = ({ filters, getFilterValue, setFilterValue, getPreFiltere
 
 // 更多筛选
 const MoreFilter = ({ filters, getFilterValue, setFilterValue }) => {
-  // const [checkedValues, setCheckedValues] = useState(() => filters.filter(v => v.fixed).map(v => v.field));
-
   // 选中的数据
   const checkedValues = useMemo(() => getFilterValue, [getFilterValue]);
 
@@ -277,61 +294,70 @@ const MoreFilter = ({ filters, getFilterValue, setFilterValue }) => {
 };
 
 // 日期范围选择器
-const DatePickerFilter = ({ getFilterValue, setFilterValue, props }) => {
-
+const DatePickerFilter = ({ getFilterValue, setFilterValue, props, dateType }) => {
   // 对日期格式的转换, 日期组件仅接收moment格式
   const value = useMemo(() => {
     let nValue;
     if (getFilterValue) {
-      nValue = [moment(getFilterValue[0]), moment(getFilterValue[1])];
+      nValue = dateType === 'rangePicker' ? [moment(getFilterValue[0]), moment(getFilterValue[1])] : moment(getFilterValue);
     }
     return nValue;
-  }, [getFilterValue]);
+  }, [dateType, getFilterValue]);
 
   // 最近的时间段, 值为JSON转换后的字符串
   const ranges = useMemo(() => {
     return Object.entries(getRanges()).map((item, i) => ({ id: i, label: item[0], value: JSON.stringify(item[1]) }));
   }, []);
 
-  // 选中时间段的触发
   const onChange = (dates, dateStrings) => {
-    setFilterValue(getIsHas(dateStrings.filter(v => !!v)) ? dateStrings : null);
+    setFilterValue(getIsHas(dateStrings) ? dateStrings : null);
   };
 
-  // 最近的时间触发事件
-  const handleLastDateOnChange = (e) => {
-    const nValue = JSON.parse(e.target.value);
-    setFilterValue(nValue);
-  };
+  if (dateType === 'rangePicker') {
+    // 选中时间段的触发
+    const handleOnChange = (dates, dateStrings) => {
+      onChange(dates, getIsHas(dateStrings.filter((v) => !!v)) ? dateStrings : null);
+    };
 
-  const panelRender = (panelNode) => {
-    return (
-      <div className="filter_picker_box">
-        {/* 左侧边栏 */}
-        {/* <div className="filter_picker_aside">
+    // 最近的时间触发事件
+    const handleLastDateOnChange = (e) => {
+      const nValue = JSON.parse(e.target.value);
+      setFilterValue(nValue);
+    };
+
+    const panelRender = (panelNode) => {
+      return (
+        <div className="filter_picker_box">
+          {/* 左侧边栏 */}
+          {/* <div className="filter_picker_aside">
           <div className="filter_picker_aside_item active">登记时间</div>
           <div className="filter_picker_aside_item">审核时间</div>
           <div className="filter_picker_aside_item">交付时间</div>
         </div> */}
-        <div className="filter_picker_main">
-          <div className="filter_picker_header">
-            <div className="filter_picker_header_tip">{getFilterValue && `${getFilterValue[0]} - ${getFilterValue[1]}`}</div>
-            <div className="filter_picker_header_operate">
-              <Radio.Group value={JSON.stringify(getFilterValue)} onChange={handleLastDateOnChange} size="small">
-                {ranges.map(v => <Radio.Button key={v.label} value={v.value}>{v.label}</Radio.Button>)}
-              </Radio.Group>
+          <div className="filter_picker_main">
+            <div className="filter_picker_header">
+              <div className="filter_picker_header_tip">{getFilterValue && `${getFilterValue[0]} - ${getFilterValue[1]}`}</div>
+              <div className="filter_picker_header_operate">
+                <Radio.Group value={JSON.stringify(getFilterValue)} onChange={handleLastDateOnChange} size="small">
+                  {ranges.map(v => <Radio.Button key={v.label} value={v.value}>{v.label}</Radio.Button>)}
+                </Radio.Group>
+              </div>
             </div>
+            {panelNode}
           </div>
-          {panelNode}
         </div>
-      </div>
+      )
+    };
+
+    return (
+      <>
+        <DatePicker.RangePicker picker="date" separator="至" placeholder={['开始日期', '结束日期']} style={{ width: 200 }} {...props} value={value} onChange={handleOnChange} panelRender={panelRender} dropdownClassName="filter_dropdown_picker" bordered={false} size="small" />
+      </>
     )
-  };
+  }
 
   return (
-    <>
-      <DatePicker.RangePicker value={value} onChange={onChange} panelRender={panelRender} dropdownClassName="filter_dropdown_picker" bordered={false} picker="date" size="small" separator="至" placeholder={['开始日期', '结束日期']} style={{ width: 200 }} {...props} />
-    </>
+    <DatePicker placeholder="选择时间" {...props} value={value} onChange={onChange} bordered={false} size="small" />
   )
 };
 

@@ -16,29 +16,36 @@ const Filter = () => {
   // 输入框查询事件
   const handleFilter = (val) => {
     const nValue = { ...filterValues };
+    if (!getIsHas(val) && !getIsHas(nValue[searchKey])) {
+      return false;
+    }
     getIsHas(val) ? (nValue[searchKey] = val) : (delete nValue[searchKey]);
     dispatch({ type: 'changeFilterValues', filterValues: nValue });
-    onChange(nValue, customFilterValues);
+    onChange?.(nValue, customFilterValues);
+    return false;
   };
 
   return (
     <>
+      {/* 输入框 */}
       {search && (
         <div className="filter_search">
           <Input.Search ref={inputRef} allowClear size="small" placeholder={placeholder} onSearch={handleFilter} />
         </div>
       )}
 
-      {
-        filter && data
-          ?.filter((v) => visibleFields.includes(v.field))
-          ?.sort((a, b) => orderFields.indexOf(a.field) - orderFields.indexOf(b.field))
-          ?.map((v) => (
-            <FilterMenu key={v.field} {...v} />
-          ))
-      }
-
-      {isMore && <MoreFilters />}
+      {/* 基础筛选 */}
+      {filter && (
+        <>
+          {data
+            ?.filter((v) => visibleFields.includes(v.field))
+            ?.sort((a, b) => orderFields.indexOf(a.field) - orderFields.indexOf(b.field))
+            ?.map((v) => (
+              <FilterMenu key={v.field} {...v} />
+            ))}
+          {isMore && <MoreFilters />}
+        </>
+      )}
     </>
   )
 };
