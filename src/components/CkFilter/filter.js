@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, forwardRef, useImperativeHandle, useCallback } from 'react';
 import { Context, useContent } from './context';
 import Custom from './customFilter';
 import BaseFilter from './baseFilter';
@@ -11,7 +11,7 @@ import CustomModal from './components/modal';
  * data
  * 
 */
-const Filter = (props) => {
+const Filter = forwardRef((props, ref) => {
   const [state, dispatch] = useContent();
   const { custom, levelGroup, complex } = state.instance;
 
@@ -19,8 +19,7 @@ const Filter = (props) => {
     console.log(state);
   }
 
-  // 初始化过滤数据
-  useEffect(() => {
+  const setOptions = useCallback(() => {
     const { trigger, onChange, data, filterValues = {}, custom: hasCustom, levelGroup: hasLevelGroup } = props;
     const isMore = data?.length > 5;
     const visileData = data.filter(v => {
@@ -44,11 +43,20 @@ const Filter = (props) => {
 
     // 是否立即触发
     trigger === 'init' && onChange?.(filterValues, customFilterValues())
-  }, []);
+  }, [dispatch, props]);
+
+  // 初始化过滤数据
+  useEffect(() => {
+    setOptions();
+  }, [setOptions]);
 
   useEffect(() => {
     dispatch({ type: 'initInstance', instance: props })
   }, [dispatch, props])
+
+  useImperativeHandle(ref, () => ({
+    setOptions,
+  }))
 
   return (
     <Context.Provider value={{ state, dispatch }}>
@@ -73,6 +81,6 @@ const Filter = (props) => {
       </div>
     </Context.Provider>
   )
-};
+});
 
 export default Filter;

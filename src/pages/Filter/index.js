@@ -1,7 +1,7 @@
-import React, { Fragment } from 'react';
+import React, { useState, Fragment, useRef } from 'react';
 import Filter from '@/components/CkFilter';
 
-const data = [
+const originata = [
   {
     id: '1',
     type: 'select',
@@ -90,6 +90,8 @@ const data = [
 
 
 const Demo = () => {
+  const [data, setData] = useState(originata);
+  const fRef = useRef(null);
 
   // 自定义筛选数据定义
   const customFilter = [
@@ -101,19 +103,38 @@ const Demo = () => {
   ]
 
   const group = [
-    {label: '全部', value: 'all'},
-    {label: '待提交', value: 'z1', default: true},
-    {label: '待审核', value: 'z2'},
+    { label: '全部', value: 'all' },
+    { label: '待提交', value: 'z1', default: true },
+    { label: '待审核', value: 'z2' },
   ];
 
   const getChange = (val, lev1) => {
     console.log('val', val, lev1)
   };
 
+  const handleClick = async () => {
+    console.log('data', data);
+    await setData([{
+      id: '2',
+      type: 'select',
+      title: '状态1',
+      field: 't1',
+      fixed: true,
+      data: [
+        { id: '1', label: '已确认', value: 'ok' },
+        { id: '2', label: '未确认', value: 'no' },
+        { id: '3', label: '已冻结', value: 'fixed' },
+      ],
+    },]);
+    fRef.current.setOptions();
+  };
+
   return (
     <Fragment>
       <div style={{ backgroundColor: '#fff', width: 800, height: 800, padding: 60 }}>
-        <Filter data={data} custom={customFilter} levelGroup={group} fullData={data} onChange={getChange} placeholder="请输入编号" searchKey="code" />
+        <Filter ref={fRef} data={data} custom={customFilter} levelGroup={group} fullData={data} onChange={getChange} placeholder="请输入编号" searchKey="code" />
+        <hr />
+        <div onClick={handleClick}>重置数据</div>
       </div>
     </Fragment>
   )
